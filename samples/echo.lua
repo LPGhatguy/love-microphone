@@ -2,14 +2,17 @@
 	Records a user's microphone and echos it back to them.
 ]]
 
--- Alias love-microphone as love.microphone
-require("love-microphone").import()
+-- Alias love-microphone as microphone
+local microphone = require("love-microphone")
 
 local device
 
 function love.load()
-	-- Open the microphone device
-	device = love.microphone.openDevice()
+	-- Report the name of the microphone we're going to use
+	print("Opening microphone:", microphone.getDefaultDeviceName())
+
+	-- Open the default microphone device with default quality and 100ms latency
+	device = microphone.openDevice(nil, nil, 0.1)
 
 	-- Start recording
 	device:start()

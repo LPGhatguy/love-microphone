@@ -3,6 +3,6 @@ Adds microphone functionality to LOVE! See the samples directory for example cod
 
 ## Supported Platforms
 - Windows
-- Linux (untested)
+- Linux
 - Mac OS X (untested)
 - Android (untested)
