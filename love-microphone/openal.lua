@@ -1,10 +1,12 @@
 --[[
-	OpenAL-soft Binding
+	love-micrphone
+	openal.lua
 
-	A binding intended for OpenAL-soft from LOVE.
+	LuaJIT FFI binding for OpenAL-soft
 ]]
 
 local ffi = require("ffi")
+-- Load OpenAL32.dll on Windows (from LOVE) or use ffi.C
 local openal = (ffi.os == "Windows") and ffi.load("openal32") or ffi.C
 
 --alc.h

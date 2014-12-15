@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.2.1
+- Moved Device functionality to separate file, cleaned up main code considerably
+- Standardized file headers
+
 ## 0.2.0
 - Added getVersion to retrieve version
 - Documented all methods
