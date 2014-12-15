@@ -5,7 +5,7 @@
 ]]
 
 local ffi = require("ffi")
-local openal = ffi.load("openal32")
+local openal = (ffi.os == "Windows") and ffi.load("openal32") or ffi.C
 
 --alc.h
 ffi.cdef([[
