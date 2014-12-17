@@ -142,9 +142,9 @@ function Device:poll()
 		al.alcCaptureSamples(self._alcdevice, self._buffer:getPointer(), self._sampleSize)
 
 		if (self._dataCallback) then
-			self._dataCallback(device, self._buffer)
+			self:_dataCallback(self._buffer)
 		elseif (love.microphonedata) then
-			love.microphonedata(device, self._buffer)
+			love.microphonedata(self, self._buffer)
 		end
 	end
 end
