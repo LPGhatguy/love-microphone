@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.2
+- Fixed data callbacks not passing the first parameter (the device) properly
+
 ## 0.2.1
 - Moved Device functionality to separate file, cleaned up main code considerably
 - Standardized file headers
