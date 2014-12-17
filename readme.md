@@ -6,5 +6,5 @@ See the samples directory for example code!
 ## Supported Platforms
 - Windows
 - Linux
-- Mac OS X (untested)
+- Mac OS X
 - Android (untested)
