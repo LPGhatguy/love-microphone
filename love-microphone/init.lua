@@ -16,23 +16,23 @@ local microphone = {
 --[[
 	(int major, int minor, int revision) microphone.getVersion()
 
-	Returns the version of love-microphone currently running
+	Returns the version of love-microphone currently running.
 ]]
 function microphone.getVersion()
-	return 0, 2, 2
+	return 0, 2, 3
 end
 
 --[[
 	void microphone.import()
 
-	Sets the module as love.microphone. Not always desired.
+	Imports the module into love.microphone. Not always desired.
 ]]
 function microphone.import()
 	love.microphone = microphone
 end
 
 --[[
-	Device microphone.openDevice(string? deviceName, int frequency, float sampleLength)
+	Device microphone.openDevice(string? deviceName, [int frequency, float sampleLength])
 		deviceName: The device to open. Specify nil to get the default device.
 		frequency: The sample rate in Hz to open the source at; defaults to 22050 Hz.
 		sampleLength: How long in seconds a sample should be; defaults to 0.5 s. Directly affects latency.
