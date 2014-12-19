@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.3
+- Updated documentation for core functions.
+
 ## 0.2.2
 - Fixed data callbacks not passing the first parameter (the device) properly
 
