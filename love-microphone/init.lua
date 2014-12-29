@@ -19,7 +19,7 @@ local microphone = {
 	Returns the version of love-microphone currently running.
 ]]
 function microphone.getVersion()
-	return 0, 2, 3
+	return 0, 2, 4
 end
 
 --[[
@@ -40,6 +40,18 @@ end
 	Open a new microphone device or returns an existing opened device
 ]]
 function microphone.openDevice(name, frequency, sampleLength)
+	if (name and type(name) ~= "string") then
+		return nil, "Invalid argument #1: Device name must be of type 'string' if given."
+	end
+
+	if (frequency and type(frequency) ~= "number" and frequency % 1 == 0) then
+		return nil, "Invalid argument #2: Frequency must of type 'number' and an integer if given."
+	end
+
+	if (sampleLength and type(sampleLength) ~= "number") then
+		return nil, "Invalid argument #3: Sample length must be of type 'number' if given."
+	end
+
 	if (microphone._devices[name]) then
 		return microphone._devices[name]
 	end

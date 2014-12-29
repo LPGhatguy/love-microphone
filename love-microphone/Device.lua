@@ -57,13 +57,18 @@ function Device:new(name, frequency, sampleLength)
 end
 
 --[[
-	void device:setDataCallback(void callback(Device device, SoundData data))
+	void device:setDataCallback(void callback(Device device, SoundData data)?)
 		callback: The function to receive the data
 
 	Sets the function that this microphone will call when it receives a buffer full of data.
+	Send no arguments to remove the current callback.
 	By default, tries to call love.microphonedata.
 ]]
 function Device:setDataCallback(callback)
+	if (callback and type(callback) ~= "function") then
+		return nil, "Invalid argument #1: Callback must be of type 'function' if given."
+	end
+
 	self._dataCallback = callback
 end
 

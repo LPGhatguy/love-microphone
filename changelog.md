@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.2.4
+- Functions now do typechecking on their arguments. They will return nil and an error message like usual.
+
 ## 0.2.3
 - Updated documentation for core functions.
 
