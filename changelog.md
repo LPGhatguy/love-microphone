@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.4.1
+- Fixed version field being incorrect.
+- Added QueueableSource:getFreeBufferCount()
+- Added optional argument to QueueableSource constructor to specify number of buffers to use.
+- Removed outdated demos and todo document
+
 ## 0.4.0
 - "fast as possible" mode added for microphone input; uses a new variable buffer size.
 	- Pass 0 as the third argument (sampleLength) to openDevice to enable this mode.

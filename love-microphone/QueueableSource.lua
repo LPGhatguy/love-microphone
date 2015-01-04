@@ -42,11 +42,20 @@ local function getALFormat(data)
 end
 
 --[[
-	QueueableSource QueueableSource:new()
+	QueueableSource QueueableSource:new(uint bufferCount=16)
+		bufferCount: The number of buffers to use to hold queued sounds.
 
 	Creates a new QueueableSource object.
 ]]
-function QueueableSource:new()
+function QueueableSource:new(bufferCount)
+	if (bufferCount) then
+		if (type(bufferCount) ~= "number" or bufferCount % 1 ~= 0 or bufferCount < 0) then
+			return nil, "Invalid argument #1: bufferCount must be a positive integer if given."
+		end
+	else
+		bufferCount = 16
+	end
+
 	local new = {}
 
 	for key, value in pairs(self) do
@@ -156,6 +165,15 @@ function QueueableSource:clear()
 		al.alSourceUnqueueBuffers(self._source, 16, self._pBuffers)
 		table.insert(self._freeBuffers, self._pBuffers[i])
 	end
+end
+
+--[[
+	uint QueueableSource:getFreeBufferCount()
+
+	Returns the number of free buffers for queueing sounds with this QueueableSource.
+]]
+function QueueableSource:getFreeBufferCount()
+	return #self._freeBuffers
 end
 
 --[[

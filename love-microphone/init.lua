@@ -20,7 +20,7 @@ local microphone = {
 	Returns the version of love-microphone currently running.
 ]]
 function microphone.getVersion()
-	return 0, 3, 0
+	return 0, 4, 1
 end
 
 --[[
@@ -37,10 +37,8 @@ end
 
 	Creates a new QueueableSource object to play lists of SoundData.
 ]]
-function microphone.newQueueableSource()
-	local source = QueueableSource:new()
-
-	return source
+function microphone.newQueueableSource(bufferCount)
+	return QueueableSource:new(bufferCount)
 end
 
 --[[
