@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.4.0
+- "fast as possible" mode added for microphone input; uses a new variable buffer size.
+	- Pass 0 as the third argument (sampleLength) to openDevice to enable this mode.
+- Removed Device:getSoundData since it doesn't work for this new mode.
+
 ## 0.3.0
 - QueueableSource object, created with microphone.newQueueableSource.
 - Updated demos to use QueueableSource and promote the microphone-specific callback method.

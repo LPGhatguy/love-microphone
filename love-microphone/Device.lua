@@ -11,7 +11,7 @@ local al = require("love-microphone.openal")
 local Device = {}
 
 --[[
-	Device Device:new(string deviceName, int frequency, float sampleLength)
+	Device Device:new(string deviceName, int frequency, float sampleLength, bool? fastAsPossible)
 		deviceName: The device to open. Specify nil to get the default device.
 		frequency: The sample rate in Hz to open the source at; defaults to 22050 Hz.
 		sampleLength: How long in seconds a sample should be; defaults to 0.5 s. Directly affects latency.
@@ -22,6 +22,12 @@ local Device = {}
 function Device:new(name, frequency, sampleLength)
 	frequency = frequency or 22050
 	sampleLength = sampleLength or 0.5
+	local fastAsPossible = false
+
+	if (sampleLength == 0) then
+		sampleLength = 0.1
+		fastAsPossible = true
+	end
 
 	-- Convert sampleLength to be in terms of audio samples
 	sampleSize = math.floor(frequency * sampleLength)
@@ -39,11 +45,21 @@ function Device:new(name, frequency, sampleLength)
 
 	-- Set some private fields
 	internal._sampleSize = sampleSize
+
+	-- Samples should be read as quickly as possible!
+	if (fastAsPossible) then
+		internal._fastAsPossible = true
+		internal._sampleSize = nil
+	else
+		-- We can only use an internal buffer if we have fixed buffer sizing.
+		internal._buffer = love.sound.newSoundData(sampleSize, frequency, 16, 1)
+	end
+
 	internal._alcdevice = alcdevice
 	internal._name = name
 	internal._valid = true
 	internal._samplesIn = ffi.new("ALCint[1]")
-	internal._buffer = love.sound.newSoundData(sampleSize, frequency, 16, 1)
+	internal._frequency = frequency
 	internal._dataCallback = nil
 
 	-- Wrap everything in a convenient userdata
@@ -125,16 +141,6 @@ function Device:close()
 end
 
 --[[
-	SoundData device:getSoundData()
-
-	Returns the internal SoundData used for storing the audio buffer.
-	Can be altered every time device:poll() is called, copy it if you need to analyze it.
-]]
-function Device:getSoundData()
-	return self._buffer
-end
-
---[[
 	void device:poll()
 
 	Polls the microphone for data, updates the buffer, and calls any registered callbacks if there is data.
@@ -142,14 +148,34 @@ end
 function Device:poll()
 	al.alcGetIntegerv(self._alcdevice, al.ALC_CAPTURE_SAMPLES, 1, self._samplesIn)
 
+	-- fastAsPossible requires variable buffer sizing; we can't reuse the internal buffer.
 	local samplesIn = self._samplesIn[0]
-	if (samplesIn >= self._sampleSize) then
-		al.alcCaptureSamples(self._alcdevice, self._buffer:getPointer(), self._sampleSize)
+	if (self._fastAsPossible) then
+		if (samplesIn == 0) then
+			return
+		end
+
+		local samples = samplesIn
+
+		local buffer = love.sound.newSoundData(samples, self._frequency, 16, 1)
+		al.alcCaptureSamples(self._alcdevice, buffer:getPointer(), samples)
 
 		if (self._dataCallback) then
-			self:_dataCallback(self._buffer)
+			self:_dataCallback(buffer)
 		elseif (love.microphonedata) then
-			love.microphonedata(self, self._buffer)
+			love.microphonedata(self, buffer)
+		end
+	elseif (samplesIn >= self._sampleSize) then
+		local samples = self._sampleSize
+		local buffer
+
+		local buffer = self._buffer
+		al.alcCaptureSamples(self._alcdevice, buffer:getPointer(), samples)
+
+		if (self._dataCallback) then
+			self:_dataCallback(buffer)
+		elseif (love.microphonedata) then
+			love.microphonedata(self, buffer)
 		end
 	end
 end

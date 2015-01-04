@@ -1,7 +1,7 @@
 --[[
 	Records a user's microphone and echos it back to them.
 
-	This uses the included QueueableSource object, which may still have issues.
+	This variant uses "fast as possible mode" to get a lower latency audio stream.
 ]]
 
 -- Alias love-microphone as microphone
@@ -12,8 +12,8 @@ function love.load()
 	-- Report the name of the microphone we're going to use
 	print("Opening microphone:", microphone.getDefaultDeviceName())
 	
-	-- Open the default microphone device with default quality and 100ms of latency.
-	device = microphone.openDevice(nil, nil, 0.1)
+	-- Open the default microphone device with default quality and as little latency as possible.
+	device = microphone.openDevice(nil, nil, 0)
 
 	-- Create a new QueueableSource to echo our audio
 	source = microphone.newQueueableSource()
