@@ -12,7 +12,7 @@ local Device = {}
 
 --[[
 	Device Device:new(string deviceName, int frequency, float sampleLength)
-		deviceName: The device to open. Specify nil to get the default device
+		deviceName: The device to open. Specify nil to get the default device.
 		frequency: The sample rate in Hz to open the source at; defaults to 22050 Hz.
 		sampleLength: How long in seconds a sample should be; defaults to 0.5 s. Directly affects latency.
 

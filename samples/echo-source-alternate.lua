@@ -5,6 +5,7 @@
 	For most applications using multiple microphones, this is probably better.
 ]]
 
+
 -- Alias love-microphone as microphone
 local microphone = require("love-microphone")
 
@@ -13,17 +14,20 @@ local device
 function love.load()
 	-- Report the name of the microphone we're going to use
 	print("Opening microphone:", microphone.getDefaultDeviceName())
-	
+
 	-- Open the default microphone device with default quality and 100ms latency
 	device = microphone.openDevice(nil, nil, 0.1)
 
-	-- Register our local callback
-	device:setDataCallback(function(device, data)
-		love.audio.newSource(data):play()
-	end)
-
 	-- Start recording
 	device:start()
+end
+
+-- Whenever we get new data
+function love.microphonedata(device, data)
+	-- Play it in a new source
+	love.audio.newSource(data):play()
+
+	-- This will hopefully be more optimal in the future
 end
 
 -- Add microphone polling to our update loop

@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.3.0
+- QueueableSource object, created with microphone.newQueueableSource.
+- Updated demos to use QueueableSource and promote the microphone-specific callback method.
+
 ## 0.2.4
 - Functions now do typechecking on their arguments. They will return nil and an error message like usual.
 

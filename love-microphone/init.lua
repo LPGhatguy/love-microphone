@@ -8,6 +8,7 @@
 local ffi = require("ffi")
 local al = require("love-microphone.openal")
 local Device = require("love-microphone.Device")
+local QueueableSource = require("love-microphone.QueueableSource")
 
 local microphone = {
 	_devices = {}
@@ -19,7 +20,7 @@ local microphone = {
 	Returns the version of love-microphone currently running.
 ]]
 function microphone.getVersion()
-	return 0, 2, 4
+	return 0, 3, 0
 end
 
 --[[
@@ -29,6 +30,17 @@ end
 ]]
 function microphone.import()
 	love.microphone = microphone
+end
+
+--[[
+	QueueableSource microphone.newQueueableSource()
+
+	Creates a new QueueableSource object to play lists of SoundData.
+]]
+function microphone.newQueueableSource()
+	local source = QueueableSource:new()
+
+	return source
 end
 
 --[[
