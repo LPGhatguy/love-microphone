@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.4.2
+- bufferCount is now honored when creating QueueableSource objects.
+
 ## 0.4.1
 - Fixed version field being incorrect.
 - Added QueueableSource:getFreeBufferCount()

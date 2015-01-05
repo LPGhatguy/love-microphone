@@ -64,11 +64,11 @@ function QueueableSource:new(bufferCount)
 		end
 	end
 
-	local pBuffers = ffi.new("ALuint[16]")
-	al.alGenBuffers(16, pBuffers)
+	local pBuffers = ffi.new("ALuint[?]", bufferCount)
+	al.alGenBuffers(bufferCount, pBuffers)
 
 	local freeBuffers = {}
-	for i = 0, 15 do
+	for i = 0, bufferCount - 1 do
 		table.insert(freeBuffers, pBuffers[i])
 	end
 
@@ -76,6 +76,7 @@ function QueueableSource:new(bufferCount)
 	al.alGenSources(1, pSource)
 	al.alSourcei(pSource[0], al.AL_LOOPING, 0)
 
+	new._bufferCount = bufferCount
 	new._pBuffers = pBuffers
 	new._freeBuffers = freeBuffers
 	new._source = pSource[0]
@@ -88,7 +89,7 @@ function QueueableSource:new(bufferCount)
 		al.alSourceStop(new._source)
 		al.alSourcei(new._source, al.AL_BUFFER, 0)
 		al.alDeleteSources(1, pSource)
-		al.alDeleteBuffers(16, pBuffers)
+		al.alDeleteBuffers(bufferCount, pBuffers)
 	end
 
 	return wrapper
@@ -161,8 +162,8 @@ end
 function QueueableSource:clear()
 	self:pause()
 
-	for i = 0, 15 do
-		al.alSourceUnqueueBuffers(self._source, 16, self._pBuffers)
+	for i = 0, self._bufferCount - 1 do
+		al.alSourceUnqueueBuffers(self._source, self._bufferCount, self._pBuffers)
 		table.insert(self._freeBuffers, self._pBuffers[i])
 	end
 end

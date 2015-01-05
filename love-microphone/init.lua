@@ -20,7 +20,7 @@ local microphone = {
 	Returns the version of love-microphone currently running.
 ]]
 function microphone.getVersion()
-	return 0, 4, 1
+	return 0, 4, 2
 end
 
 --[[
