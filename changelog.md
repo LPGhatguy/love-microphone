@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.4.3
+- Fixed-size buffers are now larger, thanks to KittyCat@#openal for the recommendation.
+
 ## 0.4.2
 - bufferCount is now honored when creating QueueableSource objects.
 

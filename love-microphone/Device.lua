@@ -32,7 +32,7 @@ function Device:new(name, frequency, sampleLength)
 	-- Convert sampleLength to be in terms of audio samples
 	sampleSize = math.floor(frequency * sampleLength)
 
-	local alcdevice = al.alcCaptureOpenDevice(name, frequency, al.AL_FORMAT_MONO16, sampleSize)
+	local alcdevice = al.alcCaptureOpenDevice(name, frequency, al.AL_FORMAT_MONO16, sampleSize * 2)
 
 	-- Create our actual microphone device object
 	local internal = {}
