@@ -11,17 +11,20 @@ local al = require("love-microphone.openal")
 local Device = {}
 
 --[[
-	Device Device:new(string deviceName, int frequency, float sampleLength, bool? fastAsPossible)
+	Device Device:new(string deviceName, int frequency, float sampleLength, int? format)
 		deviceName: The device to open. Specify nil to get the default device.
 		frequency: The sample rate in Hz to open the source at; defaults to 22050 Hz.
 		sampleLength: How long in seconds a sample should be; defaults to 0.5 s. Directly affects latency.
+		format: Sample format to use; defaults to AL_FORMAT_MONO16.
 
 	Creates a new Device object corresponding to the given microphone.
 	Will not check for duplicate handles on the same device, have care.
 ]]
-function Device:new(name, frequency, sampleLength)
+function Device:new(name, frequency, sampleLength, format)
 	frequency = frequency or 22050
 	sampleLength = sampleLength or 0.5
+	format = format or al.AL_FORMAT_MONO16
+
 	local fastAsPossible = false
 
 	if (sampleLength == 0) then
@@ -31,8 +34,16 @@ function Device:new(name, frequency, sampleLength)
 
 	-- Convert sampleLength to be in terms of audio samples
 	sampleSize = math.floor(frequency * sampleLength)
+	local sampleBytes
+	if format == al.AL_FORMAT_MONO16 then
+		sampleBytes = 16
+	elseif format == al.AL_FORMAT_MONO8 then
+		sampleBytes= 8
+	else
+		error('Unsupported format: '..tostring(format))
+	end
 
-	local alcdevice = al.alcCaptureOpenDevice(name, frequency, al.AL_FORMAT_MONO16, sampleSize * 2)
+	local alcdevice = al.alcCaptureOpenDevice(name, frequency, format, sampleSize * 2)
 
 	-- Create our actual microphone device object
 	local internal = {}
@@ -52,7 +63,7 @@ function Device:new(name, frequency, sampleLength)
 		internal._sampleSize = nil
 	else
 		-- We can only use an internal buffer if we have fixed buffer sizing.
-		internal._buffer = love.sound.newSoundData(sampleSize, frequency, 16, 1)
+		internal._buffer = love.sound.newSoundData(sampleSize, frequency, sampleBytes, 1)
 	end
 
 	internal._alcdevice = alcdevice
