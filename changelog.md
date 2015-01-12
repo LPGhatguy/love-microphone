@@ -1,5 +1,12 @@
 # Change Log
 
+## 0.5.0
+- 8-bit audio support (thanks to miko for recommendation)
+- Added Device:getBitDepth() method
+- Device:new() is now typechecked properly
+- Cleaned up typechecking code slightly
+- Cleaned up documentation
+
 ## 0.4.3
 - Fixed-size buffers are now larger, thanks to KittyCat@#openal for the recommendation.
 

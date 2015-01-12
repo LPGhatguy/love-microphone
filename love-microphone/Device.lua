@@ -9,19 +9,42 @@ local ffi = require("ffi")
 local al = require("love-microphone.openal")
 
 local Device = {}
+local formats = {
+	[8] = al.AL_FORMAT_MONO8,
+	[16] = al.AL_FORMAT_MONO16
+}
 
 --[[
-	Device Device:new(string deviceName, int frequency, float sampleLength, bool? fastAsPossible)
+	Device Device:new(string? deviceName, [int frequency, float sampleLength, uint format])
 		deviceName: The device to open. Specify nil to get the default device.
 		frequency: The sample rate in Hz to open the source at; defaults to 22050 Hz.
 		sampleLength: How long in seconds a sample should be; defaults to 0.5 s. Directly affects latency.
+		format: How many bits per sample; defaults to 16.
 
 	Creates a new Device object corresponding to the given microphone.
 	Will not check for duplicate handles on the same device, have care.
 ]]
-function Device:new(name, frequency, sampleLength)
+function Device:new(name, frequency, sampleLength, format)
+	if (name ~= nil and type(name) ~= "string") then
+		return nil, "Invalid argument #1: Device name must be of type 'string' if given."
+	end
+
+	if (frequency ~= nil and (type(frequency) ~= "number" or frequency % 1 ~= 0)) then
+		return nil, "Invalid argument #2: Frequency must of type 'number' and an integer if given."
+	end
+
+	if (sampleLength ~= nil and type(sampleLength) ~= "number") then
+		return nil, "Invalid argument #3: Sample length must be of type 'number' if given."
+	end
+
+	if (format ~= nil and (type(format) ~= "number" or format % 1 ~= 0)) then
+		return nil, "Invalid argument #4: Format must be of type 'number' and an integer if given."
+	end
+
 	frequency = frequency or 22050
 	sampleLength = sampleLength or 0.5
+	format = format or 16
+
 	local fastAsPossible = false
 
 	if (sampleLength == 0) then
@@ -29,10 +52,16 @@ function Device:new(name, frequency, sampleLength)
 		fastAsPossible = true
 	end
 
+	local alFormat = formats[format]
+
+	if (not alFormat) then
+		return nil, "Invalid argument #4: Format must be a valid OpenAL bit depth (8 or 16) if given."
+	end
+
 	-- Convert sampleLength to be in terms of audio samples
 	sampleSize = math.floor(frequency * sampleLength)
 
-	local alcdevice = al.alcCaptureOpenDevice(name, frequency, al.AL_FORMAT_MONO16, sampleSize * 2)
+	local alcdevice = al.alcCaptureOpenDevice(name, frequency, alFormat, sampleSize * 2)
 
 	-- Create our actual microphone device object
 	local internal = {}
@@ -52,10 +81,12 @@ function Device:new(name, frequency, sampleLength)
 		internal._sampleSize = nil
 	else
 		-- We can only use an internal buffer if we have fixed buffer sizing.
-		internal._buffer = love.sound.newSoundData(sampleSize, frequency, 16, 1)
+		internal._buffer = love.sound.newSoundData(sampleSize, frequency, format, 1)
 	end
 
 	internal._alcdevice = alcdevice
+	internal._format = format
+	internal._alformat = alFormat
 	internal._name = name
 	internal._valid = true
 	internal._samplesIn = ffi.new("ALCint[1]")
@@ -73,7 +104,7 @@ function Device:new(name, frequency, sampleLength)
 end
 
 --[[
-	void device:setDataCallback(void callback(Device device, SoundData data)?)
+	void Device:setDataCallback(void callback(Device device, SoundData data)?)
 		callback: The function to receive the data
 
 	Sets the function that this microphone will call when it receives a buffer full of data.
@@ -89,7 +120,7 @@ function Device:setDataCallback(callback)
 end
 
 --[[
-	bool device:start()
+	bool Device:start()
 
 	Starts recording audio with this microphone.
 	Returns true if successful.
@@ -105,7 +136,7 @@ function Device:start()
 end
 
 --[[
-	bool device:stop()
+	bool Device:stop()
 
 	Stops recording audio with this microphone.
 	Returns true if successful.
@@ -121,7 +152,7 @@ function Device:stop()
 end
 
 --[[
-	bool device:close()
+	bool Device:close()
 
 	Closes the microphone object and stops it from being used.
 	Returns true if successful.
@@ -141,7 +172,7 @@ function Device:close()
 end
 
 --[[
-	void device:poll()
+	void Device:poll()
 
 	Polls the microphone for data, updates the buffer, and calls any registered callbacks if there is data.
 ]]
@@ -157,7 +188,7 @@ function Device:poll()
 
 		local samples = samplesIn
 
-		local buffer = love.sound.newSoundData(samples, self._frequency, 16, 1)
+		local buffer = love.sound.newSoundData(samples, self._frequency, self._format, 1)
 		al.alcCaptureSamples(self._alcdevice, buffer:getPointer(), samples)
 
 		if (self._dataCallback) then
@@ -178,6 +209,15 @@ function Device:poll()
 			love.microphonedata(self, buffer)
 		end
 	end
+end
+
+--[[
+	uint Device:getBitDepth()
+
+	Returns the bit depth of the microphone.
+]]
+function Device:getBitDepth()
+	return self._format
 end
 
 return Device
