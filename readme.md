@@ -1,6 +1,5 @@
 # love-microphone
 ![shield_license]
-
 ![shield_release_version]
 ![shield_prerelease_version]
 ![shield_dev_version]
