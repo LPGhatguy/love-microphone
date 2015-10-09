@@ -1,5 +1,5 @@
 --[[
-	love-micrphone
+	love-microphone
 	openal.lua
 
 	LuaJIT FFI binding for OpenAL-soft
