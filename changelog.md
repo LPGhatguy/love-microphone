@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.6.0
+- Added QueueableSource:setVolume() method (thanks, pgimeno)
+- Fixed documentation typo (thanks, tst2005)
+
 ## 0.5.0
 - 8-bit audio support (thanks to miko for recommendation)
 - Added Device:getBitDepth() method
