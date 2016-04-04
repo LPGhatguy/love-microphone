@@ -225,4 +225,13 @@ function QueueableSource:isPaused()
 	return (state[0] == al.AL_PAUSED)
 end
 
+--[[
+	void QueueableSource:SetVolume(number volume)
+
+	Sets the volume of the source.
+]]
+function QueueableSource:setVolume(volume)
+	al.alSourcef(self._source, al.AL_GAIN, volume)
+end
+
 return QueueableSource
